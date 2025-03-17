@@ -1,0 +1,55 @@
+import React, { useState, useEffect } from 'react';
+import './App.css'
+import axios from 'axios';
+import { Card, Button } from 'antd';
+
+const DevConnectorApp = () => {
+  const [profiles, setProfiles] = useState([]);
+  const [selectedProfile, setSelectedProfile] = useState(null);
+
+  useEffect(() => {
+    axios.get('https://nt-devconnector.onrender.com/profiles')
+      .then(response => {
+        console.log(response.data); // Посмотри формат данных
+        setProfiles(Array.isArray(response.data) ? response.data : []);
+      })
+      .catch(error => console.error('Ошибка получения профилей', error));
+  }, []);
+  
+
+  const handleProfileClick = (profile) => {
+    axios.get(`https://nt-devconnector.onrender.com/profile/${profile._id}`)
+      .then(response => setSelectedProfile(response.data))
+      .catch(error => console.error('Ошибка получения деталей профиля', error));
+  };
+
+  return (
+    <div style={{ padding: '20px' }}>
+      <h1>Список разработчиков</h1>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+        {profiles.map((profile) => (
+          <Card
+            key={profile._id}
+            title={profile.name}
+            style={{ width: 300, cursor: 'pointer' }}
+            onClick={() => handleProfileClick(profile)}
+          >
+            <p>Навыки: {profile.skills.join(', ')}</p>
+          </Card>
+        ))}
+      </div>
+
+      {selectedProfile && (
+        <Card title={selectedProfile.name} style={{ marginTop: '20px' }}>
+          <p>Компания: {selectedProfile.company}</p>
+          <p>Веб-сайт: <a href={selectedProfile.website} target="_blank" rel="noopener noreferrer">{selectedProfile.website}</a></p>
+          <p>Навыки: {selectedProfile.skills.join(', ')}</p>
+          <p>Расположение: {selectedProfile.location}</p>
+          <Button onClick={() => setSelectedProfile(null)}>Закрыть</Button>
+        </Card>
+      )}
+    </div>
+  );
+};
+
+export default DevConnectorApp;
