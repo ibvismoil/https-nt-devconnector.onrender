@@ -60,14 +60,10 @@ const Home = () => {
         onClick={() => navigate('/create')}
         style={{ marginBottom: '20px', backgroundColor: '#17a2b8' }}
       >
-        Добавить пост
+        Create posts
       </Button>
-      <Button
-        type='primary'
-        onClick={() => navigate('/posts')}
-        style={{ marginBottom: '20px', marginRight: '10px', backgroundColor: '#17a2b8' }}
-      >
-        Посты
+      <Button type='primary' onClick={() => navigate('/posts')} style={{ marginBottom: '20px', marginRight: '10px', backgroundColor: '#17a2b8' }}>
+        Posts
       </Button>
       </div>
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
@@ -76,34 +72,16 @@ const Home = () => {
           <p>Посты не найдены.</p>
         ) : (
           posts.map((post) => (
-            <Card
-              key={post._id}
-              style={{
-                width: '80%',
-                marginBottom: '20px',
-                backgroundColor: '#F4F4F4',
-                borderRadius: '15px',
-                padding: '20px',
-              }}
-            >
+            <Card key={post._id} style={{ width: '80%', marginBottom: '20px', backgroundColor: '#F4F4F4', borderRadius: '15px', padding: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Avatar
-                  size={100}
-                  icon={<UserOutlined />}
-                  src={post.user?.avatar || null}
-                  style={{ marginRight: '20px' }}
-                />
+                <Avatar size={100} icon={<UserOutlined />} src={post.user?.avatar || null}  style={{ marginRight: '20px' }} />
                 <div style={{ textAlign: 'left' }}>
                   <h3 style={{ margin: 0, fontSize: '1.8em', fontWeight: 'bold' }}>
                     {post.user?.name || 'No Name'}
                   </h3>
                   <p style={{ margin: '5px 0', color: '#555' }}>{post.company || 'No Company'}</p>
                   <p style={{ margin: '5px 0', color: '#777' }}>{post.location || 'No Location'}</p>
-                  <Button
-                    type='primary'
-                    onClick={() => handleViewProfile(post)}
-                    style={{ marginTop: '10px', backgroundColor: '#17a2b8' }}
-                  >
+                  <Button type='primary' onClick={() => handleViewProfile(post)} style={{ marginTop: '10px', backgroundColor: '#17a2b8' }} >
                     View Profile
                   </Button>
                 </div>

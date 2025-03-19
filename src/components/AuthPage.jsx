@@ -9,7 +9,6 @@ const LoginPage = () => {
 
     const onFinish = async (values) => {
         setLoading(true);
-        setLoading(true);
         try {
             const response = await axios.post(
                 'https://nt-devconnector.onrender.com/api/auth',
@@ -20,9 +19,16 @@ const LoginPage = () => {
                     }
                 }
             );
-            localStorage.setItem('token', response.data.token);
+            const token = response.data.token;
+            localStorage.setItem('token', token);
+            const userResponse = await axios.get('https://nt-devconnector.onrender.com/api/auth', {
+                headers: {
+                    'x-auth-token': token
+                }
+            });
+
             message.success('Успешный вход!');
-            navigate('/posts');
+            navigate('/');
         } catch (error) {
             const errorMsg = error.response?.data?.errors?.[0]?.msg || 'Ошибка входа!';
             message.error(errorMsg);
