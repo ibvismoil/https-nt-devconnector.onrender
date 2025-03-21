@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, message, Spin, Avatar } from 'antd';
-import { LikeOutlined, DislikeOutlined } from '@ant-design/icons';
+import { Button, Card, message, Spin,  Space } from 'antd';
+import { LikeOutlined, DislikeOutlined, CommentOutlined, DeleteOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -16,11 +16,7 @@ const PostsPage = () => {
             try {
                 const response = await axios.get(
                     'https://nt-devconnector.onrender.com/api/posts',
-                    {
-                        headers: {
-                            'x-auth-token': token,
-                        },
-                    }
+                    { headers: { 'x-auth-token': token } }
                 );
                 setPosts(response.data);
             } catch (error) {
@@ -35,11 +31,7 @@ const PostsPage = () => {
             try {
                 const response = await axios.get(
                     'https://nt-devconnector.onrender.com/api/auth',
-                    {
-                        headers: {
-                            'x-auth-token': token,
-                        },
-                    }
+                    { headers: { 'x-auth-token': token } }
                 );
                 setUserMe(response.data._id);
             } catch (error) {
@@ -51,75 +43,52 @@ const PostsPage = () => {
         fetchUser();
     }, []);
 
-    const handleDelete = (id) => {
+    const handleDelete = async (id) => {
         const token = localStorage.getItem("token");
-        axios
-            .delete(`https://nt-devconnector.onrender.com/api/posts/${id}`, {
-                headers: {
-                    "x-auth-token": token,
-                },
-            })
-            .then(() => {
-                setPosts((prevPosts) => prevPosts.filter((post) => post._id !== id));
-                message.success("Пост успешно удалён");
-            })
-            .catch((error) => {
-                console.error("Ошибка при удалении поста:", error);
-                message.error("Ошибка при удалении поста");
+        try {
+            await axios.delete(`https://nt-devconnector.onrender.com/api/posts/${id}`, {
+                headers: { "x-auth-token": token },
             });
+            setPosts((prevPosts) => prevPosts.filter((post) => post._id !== id));
+            message.success("Пост успешно удалён");
+        } catch (error) {
+            message.error("Ошибка при удалении поста");
+        }
     };
 
-    async function like(id) {
+    const like = async (id) => {
+        const token = localStorage.getItem("token");
         try {
-            const token = localStorage.getItem("token");
             const response = await axios.put(
                 `https://nt-devconnector.onrender.com/api/posts/like/${id}`,
                 {},
-                {
-                    headers: {
-                        "x-auth-token": token,
-                    },
-                }
+                { headers: { "x-auth-token": token } }
             );
-
-            setPosts((prevPosts) =>
-                prevPosts.map((post) =>
-                    post._id === id ? { ...post, likes: response.data } : post
-                )
-            );
-
-            console.log("Лайк успешно поставлен!", response.data);
+            setPosts((prevPosts) => prevPosts.map((post) =>
+                post._id === id ? { ...post, likes: response.data } : post
+            ));
+            message.success("Лайк успешно поставлен!");
         } catch (error) {
-            console.error("Ошибка при лайке поста:", error.response?.data);
-            message.error(error.response?.data?.msg || "Ошибка при лайке");
+            message.error("Ошибка при лайке");
         }
-    }
+    };
 
-    async function unlike(id) {
+    const unlike = async (id) => {
+        const token = localStorage.getItem("token");
         try {
-            const token = localStorage.getItem("token");
             const response = await axios.put(
                 `https://nt-devconnector.onrender.com/api/posts/unlike/${id}`,
                 {},
-                {
-                    headers: {
-                        "x-auth-token": token,
-                    },
-                }
+                { headers: { "x-auth-token": token } }
             );
-
-            setPosts((prevPosts) =>
-                prevPosts.map((post) =>
-                    post._id === id ? { ...post, likes: response.data } : post
-                )
-            );
-
-            console.log("Лайк успешно удалён!", response.data);
+            setPosts((prevPosts) => prevPosts.map((post) =>
+                post._id === id ? { ...post, likes: response.data } : post
+            ));
+            message.success("Лайк успешно удалён!");
         } catch (error) {
-            console.error("Ошибка при удалении лайка:", error.response?.data);
-            message.error(error.response?.data?.msg || "Ошибка при удалении лайка");
+            message.error("Ошибка при удалении лайка");
         }
-    }
+    };
 
     if (loading) {
         return <Spin tip="Загрузка постов..." size="large" />;
@@ -127,49 +96,26 @@ const PostsPage = () => {
 
     return (
         <div style={{ padding: '20px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-                <h2>Posts</h2>
-                <Button type="primary" onClick={() => navigate('/create')} style={{ backgroundColor: '#17a2b8' }}>
-                    Create post
-                </Button>
-            </div>
-            {posts.length === 0 ? (
-                <p>Постов нет.</p>
-            ) : (
-                posts.map((post) => (
-                    <Card key={post._id} style={{ marginBottom: '10px', borderRadius: '8px', padding: '10px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',}}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <Avatar style={{ marginRight: '10px' }}>U</Avatar>
-                            <div>
-                                <p style={{ margin: 0, fontWeight: 'bold', color: '#17a2b8' }}>{post.user.name}</p>
-                                <p style={{ margin: 0, fontSize: '12px', color: '#888' }}>
-                                    Опубликовано: {new Date(post.date).toLocaleDateString()}
-                                </p>
-                            </div>
-                        </div>
-                        <h3 style={{ marginTop: '10px' }}>{post.text}</h3>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
-                            <div className="flex gap-[15px] mt-[10px]">
-                                <button onClick={() => like(post?._id)}>Like {post?.likes.length}</button>
-                                <button onClick={() => unlike(post?._id)}>Unlike</button>
-                            </div>
-                            <Button
-  type="primary"
-  style={{ backgroundColor: '#17a2b8', marginLeft: '10px' }}
-  onClick={() => navigate(`/comments/${post._id}`)}
->
-  Discussion
-</Button>
-
-                            {String(post.user) === String(userMe) && (
-                                <Button type="danger" onClick={() => handleDelete(post._id)} style={{ backgroundColor: 'red', color: 'white' }}>
-                                    Удалить
-                                </Button>
-                            )}
-                        </div>
-                    </Card>
-                ))
-            )}
+            <h2>Posts</h2>
+            {posts.map((post) => (
+                <Card key={post._id} style={{ marginBottom: '20px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <img style={{border:'50px'}} src={post.avatar} alt="" width={50} height={50}/>
+                    </div>
+                    <span style={{}}>Name: {post.name}</span>
+                    <p>Text: {post.text}</p>
+                    <Space>
+                        <Button icon={<LikeOutlined />} onClick={() => like(post._id)}>{post?.likes?.length || 0}</Button>
+                        <Button icon={<DislikeOutlined />} onClick={() => unlike(post._id)} />
+                        <Button onClick={() => navigate(`/comments/${post._id}`)}>Discussion</Button>
+                        {String(post.user) === String(userMe) && (
+                            <Button danger icon={<DeleteOutlined />} onClick={() => handleDelete(post._id)}>
+                                Удалить
+                            </Button>
+                        )}
+                    </Space>
+                </Card>
+            ))}
         </div>
     );
 };

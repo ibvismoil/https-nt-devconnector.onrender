@@ -54,16 +54,9 @@ const Home = () => {
     <div style={{ padding: '20px', textAlign: 'center' }}>
       <h1 style={{ marginBottom: '20px', color: '#17a2b8', fontSize: '3rem', fontWeight: 'bold' }}>Developers</h1>
       <p style={{ marginBottom: '20px', color: 'black', fontSize: '1.5rem' }}>Browse and connect with developers</p>
-      <div style={{display:'flex', gap:'5px',textAlign: 'center'}}>
-      <Button
-        type='primary'
-        onClick={() => navigate('/create')}
-        style={{ marginBottom: '20px', backgroundColor: '#17a2b8' }}
-      >
-        Create posts
-      </Button>
-      <Button type='primary' onClick={() => navigate('/posts')} style={{ marginBottom: '20px', marginRight: '10px', backgroundColor: '#17a2b8' }}>
-        Posts
+      <div>
+      <Button type='primary' onClick={() => navigate('/')} style={{ marginBottom: '20px', backgroundColor: '#17a2b8' }} >
+        Home
       </Button>
       </div>
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import '../App.css'
 
 
 const handleLogout = () => {
@@ -17,7 +18,8 @@ const MainPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div
+    <div>
+    <div 
       style={{
         height: '100vh',
         backgroundImage: 'url(https://c.pxhere.com/photos/1c/58/Art_Code_Computer_Creative_CSS_Design_Desk_Mac-1614086.jpg!d)',
@@ -48,6 +50,7 @@ const MainPage = () => {
              )}
       </div>
     </div>
+        </div>
   );
 };
 
